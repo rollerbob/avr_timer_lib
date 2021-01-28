@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/toolchains/avr-9.1.0/avr/include",
+                "C:/toolchains/avr-9.1.0/lib/gcc/avr/9.1.0/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "c:/toolchains/avr-9.1.0/bin/avr-gcc.exe -mmcu=atmega8"
+        }
+    ],
+    "version": 4
+}

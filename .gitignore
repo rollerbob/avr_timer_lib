@@ -1,0 +1,11 @@
+/doc
+/hardware/proteus/*
+!/hardware/proteus/*.pdsprj
+/src/.dep
+/src/obj
+/src/*.hex
+/src/*.elf
+/src/*.eep
+/src/*.lss
+/src/*.map
+/src/*.sym

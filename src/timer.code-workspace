@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"workbench.panel.defaultLocation": "right",
+        "editor.rulers": [
+            40, 80
+        ],
+        "files.exclude": {
+            "*.eep": true,
+            "*.lss": true,
+            "*.map": true,
+            "*.sym": true
+        }
+	}
+}
