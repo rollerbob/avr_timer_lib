@@ -12,7 +12,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "intelliSenseMode": "msvc-x64",
+            "intelliSenseMode": "${default}",
             "compilerPath": "c:/toolchains/avr-9.1.0/bin/avr-gcc.exe -mmcu=atmega8"
         }
     ],

@@ -119,41 +119,62 @@ void (*second_func[])(Second_timer_t *timer) = {
 // Функции обработки минутных таймеров
 void _Handle_minute_timer_down_stop(Minute_timer_t *timer)
 {
-    timer->frame--;
-    if (!timer->frame)
+    uint16_t frame = timer->frame;
+    uint8_t second = timer->second;
+    uint8_t minute = timer->minute;
+    uint8_t target = 0;
+    
+    frame--;
+    if (!frame)
     {
-        timer->frame = FRAME_RATE;
-        timer->second--;
-        if (!timer->second)
+        frame = FRAME_RATE;
+        second--;
+        if (second)
         {
-            timer->second = 60;
-            if (timer->minute > 0)
+            second = 60;
+            if (minute > 0)
             {
-                timer->minute--;
-                if (!timer->minute)
-                    timer->target = 1;
+                minute--;
+                if (!minute)
+                    target = 1;
             }
         }
     }
+
+    timer->frame = frame;
+    timer->second = second;
+    timer->minute = minute;
+    timer->target = target;
 }
 void _Handle_minute_timer_down_start(Minute_timer_t *timer)
 {
-    timer->frame--;
-    if (!timer->frame)
+    uint16_t frame = timer->frame;
+    uint8_t second = timer->second;
+    uint8_t minute = timer->minute;
+    uint8_t max_cntr = timer->max_cntr;
+    uint8_t target = 0;
+
+    frame--;
+    if (!frame)
     {
-        timer->frame = FRAME_RATE;
-        timer->second--;
-        if (!timer->second)
+        frame = FRAME_RATE;
+        second--;
+        if (!second)
         {
-            timer->second = 60;
-            timer->minute--;
-            if (!timer->minute)
+            second = 60;
+            minute--;
+            if (!minute)
             {
-                timer->minute = timer->max_cntr;
-                timer->target = 1;
+                minute = max_cntr;
+                target = 1;
             }
         }
     }
+
+    timer->frame = frame;
+    timer->second = second;
+    timer->minute = minute;
+    timer->target = target;
 }
 void _Handle_minute_timer_up_stop(Minute_timer_t *timer)
 {
@@ -214,8 +235,8 @@ void Init_timer_module(void)
 void Update_timer_module(void)
 {
     cli();
-    if (new_frame) new_frame = 0;
-    else if (_new_frame) 
+    new_frame = 0;
+    if (_new_frame) 
     {
         new_frame = 1;
         _new_frame = 0;
@@ -277,7 +298,54 @@ void Update_timer(void *timer)
 
 void Reset_timer(void *timer)
 {
-    ;
+    // Первым байтом всех таймеров идёт его тип.
+    Timer_type_e timer_type = *(Timer_type_e *)timer;
+    
+    Frame_timer_t *frame_timer;
+    Second_timer_t *second_timer;
+    Minute_timer_t *minute_timer;
+
+    switch (timer_type)
+    {
+        case FRAME_TIMER:
+        frame_timer = (Frame_timer_t *)timer;
+        if (frame_timer->counting == UP_COUNT)
+            frame_timer->frame = 0;
+        else
+            frame_timer->frame = frame_timer->max_cntr;
+        break;
+
+        case SECOND_TIMER:
+        second_timer = (Second_timer_t *)timer;
+        if (second_timer->counting == UP_COUNT)
+        {
+            second_timer->frame = 0;
+            second_timer->second = 0;
+        } else
+        {
+            second_timer->second = second_timer->max_cntr;
+            second_timer->frame = FRAME_RATE;
+        }
+        break;
+
+        case MINUTE_TIMER:
+        minute_timer = (Minute_timer_t *)timer;
+        if (minute_timer->counting == UP_COUNT)
+        {
+            minute_timer->frame = 0;
+            minute_timer->second = 0;
+            minute_timer->minute = 0;
+        } else
+        {
+            minute_timer->frame = FRAME_RATE;
+            minute_timer->second = 60;
+            minute_timer->minute = minute_timer->max_cntr;
+        }
+        break;
+
+        default:
+        break;
+    }
 }
 
 ISR(TIMER2_COMP_vect)
